@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TotalRecall", "TotalRecall\TotalRecall.csproj", "{AA1202E3-E6B6-42D0-B6CC-FD39F44AA607}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FEEF80F-C578-4917-B427-0FB1602E3847}"
+	ProjectSection(SolutionItems) = preProject
+		..\totalrecall.targets = ..\totalrecall.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TotalRecall.MSBuild", "TotalRecall.MSBuild\TotalRecall.MSBuild.csproj", "{1CA466A5-2FD2-4252-80A2-77E5D3D2EDC8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA1202E3-E6B6-42D0-B6CC-FD39F44AA607}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA1202E3-E6B6-42D0-B6CC-FD39F44AA607}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA1202E3-E6B6-42D0-B6CC-FD39F44AA607}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA1202E3-E6B6-42D0-B6CC-FD39F44AA607}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CA466A5-2FD2-4252-80A2-77E5D3D2EDC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CA466A5-2FD2-4252-80A2-77E5D3D2EDC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CA466A5-2FD2-4252-80A2-77E5D3D2EDC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CA466A5-2FD2-4252-80A2-77E5D3D2EDC8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
