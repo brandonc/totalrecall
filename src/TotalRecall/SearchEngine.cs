@@ -42,7 +42,7 @@ namespace TotalRecall
 
         public SearchEngine()
         {
-            var config = (TotalRecallConfigurationSection)ConfigurationManager.GetSection("totalRecall");
+            var config = (TotalRecallConfigurationSection)ConfigurationManager.GetSection("totalrecall");
             searcher = new IndexSearcher(FSDirectory.Open(new DirectoryInfo(config.IndexFolder)), true);
         }
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>totalrecall</id>
+    <version>0.1.5</version>
+    <authors>Brandon Croft</authors>
+    <owners>Brandon Croft</owners>
+    <licenseUrl>https://github.com/brandonc/totalrecall/raw/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/brandonc/totalrecall</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lucene-powered site crawler, indexer, and query interface. With MSBuild integration. Pre-beta software. Do not install.</description>
+    <tags>search msbuild crawler lucene</tags>
+  </metadata>
+</package>

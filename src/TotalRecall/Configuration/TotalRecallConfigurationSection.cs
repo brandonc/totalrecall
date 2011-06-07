@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using System.Web;
 
 namespace TotalRecall.Configuration
 {
@@ -13,7 +14,13 @@ namespace TotalRecall.Configuration
         {
             get
             {
-                return (string)this["indexfolder"];
+                string result = (string)this["indexfolder"];
+
+                if (!String.IsNullOrEmpty(result) && result.StartsWith("~/") && HttpContext.Current != null)
+                {
+                    result = HttpContext.Current.Server.MapPath(result);
+                }
+                return result;
             }
             set
             {

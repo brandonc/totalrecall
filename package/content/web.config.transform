@@ -1,0 +1,7 @@
+<configuration>
+  <configSections>
+     <section name="totalrecall" type="TotalRecall.Configuration.TotalRecallConfigurationSection,TotalRecall" />
+  </configSections>
+
+  <totalrecall indexfolder="~/.totalrecall" />
+</configuration>

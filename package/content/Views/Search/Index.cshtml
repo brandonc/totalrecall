@@ -1,0 +1,14 @@
+@model IEnumerable<TotalRecall.Hit>
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<h2>Search Results</h2>
+
+<ol>
+@foreach(var h in Model) {
+    <li><a href="@h.Url">@h.Title</a><br/>
+	<em>Score: @h.Relevance</em></li>
+}
+</ol>
