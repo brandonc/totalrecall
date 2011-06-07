@@ -4,19 +4,19 @@
 
 Step 1: Edit output\totalrecall.targets file:
 
-    &lt;TotalRecall.IndexSiteTask PublishedWebsiteUrl="[Your website url]" Optimize="True" IndexFolder="$(WebProjectOutputDir)\.totalrecall"/&gt;
+    <TotalRecall.IndexSiteTask PublishedWebsiteUrl="[Your website url]" Optimize="True" IndexFolder="$(WebProjectOutputDir)\.totalrecall"/>
 
 Step 2: Import totalrecall targets somewhere into your project file:
 
-    &lt;Import Project="..\totalrecall\output\totalrecall.targets" /&gt;
+    <Import Project="..\totalrecall\output\totalrecall.targets" />
 
 Step 3: Add config section to your web.config file:
 
-    &lt;configSections&gt;
-       &lt;section name="totalrecall" type="TotalRecall.Configuration.TotalRecallConfigurationSection,TotalRecall" /&gt;
-    &lt;/configSections&gt;
+    <configSections>
+       <section name="totalrecall" type="TotalRecall.Configuration.TotalRecallConfigurationSection,TotalRecall" />
+    </configSections>
 
-    &lt;totalrecall IndexFolder=".totalrecall" /&gt;
+    <totalrecall IndexFolder=".totalrecall" />
 
 Step 4: Index your site:
 
