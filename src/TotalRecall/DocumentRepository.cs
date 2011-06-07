@@ -16,6 +16,7 @@ namespace TotalRecall
         private IndexReader reader;
         private IndexSearcher searcher;
         private bool finalized;
+        private ILogWrapper log;
 
         private static readonly DateTime epoch = new DateTime(1970, 1, 1);
 
@@ -39,6 +40,7 @@ namespace TotalRecall
         public void Delete(string id)
         {
             index.DeleteDocuments(new Term("path", id));
+            log.Info("Deleting document [" + id + "] from index");
         }
 
         public void AddUpdate(string id, string title, string contents, DateTime lastModified)
@@ -48,25 +50,29 @@ namespace TotalRecall
             if (doc != null)
             {
                 if ((long)(lastModified - epoch).TotalMilliseconds < DateTools.StringToTime(doc.GetField("modified").StringValue()))
+                {
+                    log.Info("Document ID " + id + " already exists in the index and doesn't need to be updated.");
                     return;
+                }
 
-                index.DeleteDocuments(new Term("path", doc.GetField("path").StringValue()));
+                Delete(doc.Get("path"));
             }
 
             doc = new Document();
             doc.Add(new Field("path", id, Field.Store.YES, Field.Index.ANALYZED));
             doc.Add(new Field("title", title, Field.Store.YES, Field.Index.ANALYZED));
-            doc.Add(new Field("contents", contents, Field.Store.NO, Field.Index.ANALYZED));
+            doc.Add(new Field("contents", contents, Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.WITH_POSITIONS_OFFSETS));
             doc.Add(new Field("modified", DateTools.TimeToString((long)(DateTime.Now - epoch).TotalMilliseconds, DateTools.Resolution.MINUTE), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
             this.index.AddDocument(doc);
         }
 
-        public DocumentRepository(IndexWriter index)
+        public DocumentRepository(IndexWriter index, ILogWrapper log)
         {
             this.index = index;
             this.reader = this.index.GetReader();
             this.searcher = new IndexSearcher(this.reader);
+            this.log = log;
         }
 
         ~DocumentRepository()

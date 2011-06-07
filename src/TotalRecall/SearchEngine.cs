@@ -11,6 +11,9 @@ using TotalRecall.Configuration;
 using System.Configuration;
 using Lucene.Net.Store;
 using System.IO;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Search.Spans;
+using Lucene.Net.Highlight;
 
 namespace TotalRecall
 {
@@ -20,7 +23,13 @@ namespace TotalRecall
 
         public IEnumerable<Hit> Search(string query, int maxResults)
         {
-            QueryParser qp = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "contents", new SimpleAnalyzer());
+            var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29);
+
+            QueryParser qp = new QueryParser(
+                Lucene.Net.Util.Version.LUCENE_29,
+                "contents",
+                analyzer
+            );
             Query q = qp.Parse(query);
 
             TopDocs top = searcher.Search(q, maxResults);
@@ -29,11 +38,17 @@ namespace TotalRecall
             for (int index = 0; index < top.totalHits; index++)
             {
                 var doc = searcher.Doc(top.scoreDocs[index].doc);
+                string contents = doc.Get("contents");
+
+                var scorer = new QueryScorer(q, searcher.GetIndexReader(), "contents");
+                var highlighter = new Highlighter(scorer);
+
                 result.Add(new Hit()
                 {
                     Relevance = top.scoreDocs[index].score,
-                    Title = doc.GetField("title").StringValue(),
-                    Url = doc.GetField("path").StringValue()
+                    Title = doc.Get("title"),
+                    Url = doc.Get("path"),
+                    Excerpt = highlighter.GetBestFragment(analyzer, "contents", contents)
                 });
             }
 
@@ -43,6 +58,16 @@ namespace TotalRecall
         public SearchEngine()
         {
             var config = (TotalRecallConfigurationSection)ConfigurationManager.GetSection("totalrecall");
+
+            if (config == null)
+            {
+                config = new TotalRecallConfigurationSection()
+                {
+                    IndexFolder = TotalRecallConfigurationSection.DefaultIndexFolderName,
+                    Optimize = TotalRecallConfigurationSection.DefaultOptimize
+                };
+            }
+
             searcher = new IndexSearcher(FSDirectory.Open(new DirectoryInfo(config.IndexFolder)), true);
         }
     }

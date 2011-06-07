@@ -10,17 +10,19 @@ using NCrawler.Interfaces;
 using TotalRecall.Configuration;
 using Lucene.Net.Search;
 using NCrawler;
+using Lucene.Net.Analysis.Standard;
+using NCrawler.Events;
 
 namespace TotalRecall
 {
     class DocumentIndexStep : IPipelineStep
     {
-        private log4net.ILog log;
+        private ILogWrapper log;
         private IConfig config;
         private DocumentRepository repository;
         private bool bindevents = false;
 
-        public DocumentIndexStep(IConfig config, log4net.ILog log)
+        public DocumentIndexStep(IConfig config, ILogWrapper log)
         {
             this.config = config;
             this.log = log;
@@ -28,23 +30,26 @@ namespace TotalRecall
             this.repository = new DocumentRepository(
                 new IndexWriter(
                     FSDirectory.Open(new DirectoryInfo(config.IndexFolder)),
-                    new SimpleAnalyzer(),
+                    new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29),
                     true,
                     IndexWriter.MaxFieldLength.UNLIMITED
-                )
+                ),
+                this.log
             );
         }
 
         private void crawler_CrawlFinished(object sender, NCrawler.Events.CrawlFinishedEventArgs e)
         {
+            log.Info("Crawling complete");
             if (this.config.Optimize)
             {
-                log.Debug("Optimizing index");
+                log.Info("Optimizing index");
                 this.repository.Optimize();
+            } else
+            {
+                log.Info("Index optimization disabled");
             }
-#if DEBUG
-            log.Debug("Disposing repository");
-#endif
+
             repository.Dispose();
         }
 
@@ -52,7 +57,7 @@ namespace TotalRecall
         {
             if (!bindevents)
             {
-                crawler.CrawlFinished += new EventHandler<NCrawler.Events.CrawlFinishedEventArgs>(crawler_CrawlFinished);
+                crawler.CrawlFinished += new EventHandler<CrawlFinishedEventArgs>(crawler_CrawlFinished);
                 bindevents = true;
             }
 
@@ -61,17 +66,15 @@ namespace TotalRecall
             if (propertyBag.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 repository.AddUpdate(id, propertyBag.Title, propertyBag.Text, propertyBag.LastModified);
-#if DEBUG
-                log.Debug("Add/Update doc id [" + id + "]");
-#endif
+                log.Info("Add/Update [" + id + "]");
 
             } else if (propertyBag.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                log.Debug("Crawler encoutered 404: " + id + ", deleting document");
+                log.Warning("Crawler encoutered 404 for [" + id + "]");
                 repository.Delete(id);
             } else
             {
-                log.Debug("Crawler encountered status " + propertyBag.StatusCode.ToString() + " (" + propertyBag.StatusDescription + "): " + id);
+                log.Warning("Crawler encountered status " + propertyBag.StatusCode.ToString() + " (" + propertyBag.StatusDescription + ") for document " + id);
             }
         }
     }

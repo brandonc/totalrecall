@@ -9,7 +9,10 @@ namespace TotalRecall.Configuration
 {
     public class TotalRecallConfigurationSection : ConfigurationSection, IConfig
     {
-        [ConfigurationProperty("indexfolder", DefaultValue = ".totalrecall")]
+        public const string DefaultIndexFolderName = "~/.totalrecall";
+        public const bool DefaultOptimize = false;
+
+        [ConfigurationProperty("indexfolder", DefaultValue = "~/.totalrecall")]
         public string IndexFolder
         {
             get
@@ -19,6 +22,8 @@ namespace TotalRecall.Configuration
                 if (!String.IsNullOrEmpty(result) && result.StartsWith("~/") && HttpContext.Current != null)
                 {
                     result = HttpContext.Current.Server.MapPath(result);
+                } else if(!String.IsNullOrEmpty(result) && result.StartsWith("~/")) {
+                    result = result.Substring(2);
                 }
                 return result;
             }
@@ -45,7 +50,7 @@ namespace TotalRecall.Configuration
             }
         }
 
-        [ConfigurationProperty("optimize", DefaultValue = false)]
+        [ConfigurationProperty("optimize", DefaultValue = true)]
         public bool Optimize
         {
             get

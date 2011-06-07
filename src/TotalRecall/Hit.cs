@@ -9,6 +9,7 @@ namespace TotalRecall
     {
         public string Url { get; set; }
         public string Title { get; set; }
+        public string Excerpt { get; set; }
         public float Relevance { get; set; }
     }
 }

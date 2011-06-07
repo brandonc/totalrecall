@@ -20,13 +20,14 @@ namespace TotalRecall
     {
         public string WebsiteUrl { get; set; }
         public IConfig Config { get; set; }
+        public ILogWrapper LogWrapper { get; set; }
 
         public void Crawl()
         {
-            ILog log = LogManager.GetLogger(typeof(SiteCrawler));
-
-            using (Crawler c = new Crawler(new Uri(this.WebsiteUrl), new HtmlDocumentProcessor(), new DocumentIndexStep(this.Config, log)))
+            using (Crawler c = new Crawler(new Uri(this.WebsiteUrl), new HtmlDocumentProcessor(), new DocumentIndexStep(this.Config, this.LogWrapper)))
             {
+                this.LogWrapper.Info("Crawler started: Using " + (System.Environment.ProcessorCount * 2) + " threads");
+
                 c.AdhereToRobotRules = true;
                 c.MaximumThreadCount = System.Environment.ProcessorCount * 2;
                 c.ExcludeFilter = new[] {
@@ -37,42 +38,18 @@ namespace TotalRecall
         }
 
         public SiteCrawler(string websiteUrl)
-        {
-            WebsiteUrl = websiteUrl;
-        }
+            : this(websiteUrl, (TotalRecallConfigurationSection)ConfigurationManager.GetSection("totalrecall"))
+        { }
 
         public SiteCrawler(string websiteUrl, IConfig config)
+            : this(websiteUrl, config, new DefaultLogWrapper("crawler", config))
+        { }
+
+        public SiteCrawler(string websiteUrl, IConfig config, ILogWrapper log)
         {
             WebsiteUrl = websiteUrl;
             Config = config;
-        }
-
-        static SiteCrawler()
-        {
-            Hierarchy hierarchy = (Hierarchy)LogManager.GetRepository();
-            TraceAppender tracer = new TraceAppender();
-            PatternLayout patternLayout = new PatternLayout();
-
-            patternLayout.ConversionPattern = "%timestamp %-5level %logger{2} - %message%newline";
-            patternLayout.ActivateOptions();
-
-            tracer.Layout = patternLayout;
-            tracer.ActivateOptions();
-            hierarchy.Root.AddAppender(tracer);
-
-            RollingFileAppender roller = new RollingFileAppender();
-            roller.Layout = patternLayout;
-            roller.AppendToFile = true;
-            roller.RollingStyle = RollingFileAppender.RollingMode.Size;
-            roller.MaxSizeRollBackups = 4;
-            roller.MaximumFileSize = "100KB";
-            roller.StaticLogFileName = true;
-            roller.File = "crawler.log";
-            roller.ActivateOptions();
-            hierarchy.Root.AddAppender(roller);
-
-            hierarchy.Root.Level = Level.All;
-            hierarchy.Configured = true;
+            LogWrapper = log;
         }
     }
 }
