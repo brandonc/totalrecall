@@ -45,3 +45,4 @@ _ReSharper*/
 
 package/*.nupkg
 .totalrecall
+binaries

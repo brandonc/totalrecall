@@ -1,0 +1,58 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+  <PropertyGroup>
+    <BuildConfig>Release</BuildConfig>
+    <BinariesFolder>$(MSBuildProjectDirectory)\binaries</BinariesFolder>
+    <MergedOutputPath>$(MSBuildProjectDirectory)\binaries\merged</MergedOutputPath>
+    <RekallMergedOutputPath>$(MSBuildProjectDirectory)\binaries\rekall</RekallMergedOutputPath>
+    <NugetPackageOutputPath>$(MSBuildProjectDirectory)\package\lib</NugetPackageOutputPath>
+    <NugetPackageToolsPath>$(MSBuildProjectDirectory)\package\tools</NugetPackageToolsPath>
+    <ILMerge>$(MSBuildProjectDirectory)\tools\ILMerge.exe</ILMerge>
+  </PropertyGroup>
+
+  <Target Name="Clean">
+    <MSBuild Projects="src\TotalRecall.sln" StopOnFirstFailure="true" Properties="Configuration=Release" BuildInParallel="true" Targets="Clean"/>
+    <RemoveDir Directories="$(BinariesFolder)" />
+  </Target>
+
+  <Target Name="Build">
+    <MSBuild Projects="src\TotalRecall.sln" StopOnFirstFailure="true" Properties="Configuration=Release" BuildInParallel="true" Targets="Rebuild" />
+  </Target>
+
+  <Target Name="CopyToBinFolder">
+    <ItemGroup>
+      <BinaryFiles Include="$(MSBuildProjectDirectory)\src\TotalRecall\bin\$(BuildConfig)\*.*" />
+      <BinaryFiles Include="$(MSBuildProjectDirectory)\src\TotalRecall.MSBuild\bin\$(BuildConfig)\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BinaryFiles)"
+        DestinationFolder="$(BinariesFolder)"
+        ContinueOnError="false" />
+  </Target>
+
+  <Target Name="Merge">
+    <ItemGroup>
+      <MergeAsm Include="$(MSBuildProjectDirectory)\src\TotalRecall\bin\$(BuildConfig)\TotalRecall.dll" />
+      <MergeAsm Include="$(MSBuildProjectDirectory)\src\TotalRecall.MSBuild\bin\$(BuildConfig)\TotalRecall.MSBuild.dll" />
+      <MergeAsm Include="$(MSBuildProjectDirectory)\lib\*.dll" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(MergedOutputPath)" Condition="!EXISTS($(MergedOutputPath))"/>
+    <Message Text="Merging: @(MergeAsm->'%(Filename)', ' and ') into $(MergedOutputPath)\TotalRecall.dll" />
+    <Exec Command="&quot;$(ILMerge)&quot; /ndebug /targetplatform:v4,&quot;$(MSBuildBinPath)&quot; /target:library /out:&quot;$(MergedOutputPath)\TotalRecall.dll&quot; @(MergeAsm->'&quot;%(FullPath)&quot;', ' ') " />
+  </Target>
+
+  <Target Name="MergeRekallConsole">
+    <ItemGroup>
+      <MergeAsmRekallConsole Include="$(MSBuildProjectDirectory)\src\TotalRecall.Console\bin\$(BuildConfig)\rekall.exe" />
+      <MergeAsmRekallConsole Include="$(MSBuildProjectDirectory)\src\TotalRecall.Console\bin\$(BuildConfig)\*.dll" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(RekallMergedOutputPath)" Condition="!EXISTS($(RekallMergedOutputPath))"/>
+    <Message Text="Merging: @(MergeAsmRekallConsole->'%(Filename)%(Extension)', ' and ') into $(RekallMergedOutputPath)\rekall.exe" />
+    <Exec Command="&quot;$(ILMerge)&quot; /ndebug /targetplatform:v4,&quot;$(MSBuildBinPath)&quot; /target:exe /out:&quot;$(RekallMergedOutputPath)\rekall.exe&quot; @(MergeAsmRekallConsole->'&quot;%(FullPath)&quot;', ' ') " />
+  </Target>
+
+  <Target Name="CopyToNugetPackage">
+    <Copy SourceFiles="$(MergedOutputPath)\TotalRecall.dll" DestinationFolder="$(NugetPackageOutputPath)" />
+    <Copy SourceFiles="$(MergedOutputPath)\TotalRecall.dll" DestinationFolder="$(NugetPackageToolsPath)" />
+  </Target>
+</Project>

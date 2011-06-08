@@ -8,7 +8,7 @@
 
 <ol>
 @foreach(var h in Model) {
-    <li><a href="@h.Url">@h.Title</a><br/>
-	<em>Score: @h.Relevance</em></li>
+    <li><a href="@h.Url">@Html.Raw(h.Title)</a><br/>
+	@Html.Raw(h.Excerpt)</li>
 }
 </ol>
