@@ -6,7 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FEEF80F-C578-4917-B427-0FB1602E3847}"
 	ProjectSection(SolutionItems) = preProject
 		..\totalrecall.proj = ..\totalrecall.proj
-		..\package\tools\totalrecall.targets = ..\package\tools\totalrecall.targets
+		..\totalrecall.targets = ..\totalrecall.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TotalRecall.MSBuild", "TotalRecall.MSBuild\TotalRecall.MSBuild.csproj", "{1CA466A5-2FD2-4252-80A2-77E5D3D2EDC8}"
