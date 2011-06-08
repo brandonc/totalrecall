@@ -21,17 +21,19 @@ Step 3: Index your site:
 Step 4: Navigate to /search/query=something%20interesting
 
 
-### Manual Install ###
+### Building from source ###
 
-Step 1: Import totalrecall targets somewhere into your project file:
+Step 1: Run build.bat and reference binaries\merged\TotalRecall.dll. Copy the binaries\merged\totalrecall.targets file to your project.
 
-    <Import Project="..\lib\totalrecall.targets" />
+Step 2: Import totalrecall targets somewhere into your project file:
 
-Step 2: Edit packages\totalrecall\tools\totalrecall.targets file:
+    <Import Project="..\your\path\to\totalrecall.targets" />
+
+Step 3: Edit totalrecall.targets file:
 
     <TotalRecall.MSBuild.IndexSiteTask PublishedWebsiteUrl="[YOUR NEWLY BUILT WEBSITE URL]" Optimize="True" IndexFolder="$(WebProjectOutputDir)\.totalrecall"/>
 
-Step 3: Add config section to your web.config file:
+Step 4: Add config section to your web.config file:
 
     <configSections>
        <section name="totalrecall" type="TotalRecall.Configuration.TotalRecallConfigurationSection,TotalRecall" />
@@ -39,11 +41,11 @@ Step 3: Add config section to your web.config file:
 
     <totalrecall indexfolder="~/.totalrecall" />
 
-Step 4: Index your site:
+Step 5: Index your site:
 
-    MSBuild.exe /target:CrawlIndexSite mywebsiteproj.csproj
+    MSBuild.exe /target:CrawlIndexSite yourwebsiteproj.csproj
 
-Step 5: Query on your search page:
+Step 6: Query on your search page:
 
     var engine = new TotalRecall.SearchEngine();
     var hits = engine.Search("something interesting", 10);

@@ -38,6 +38,7 @@
     <MakeDir Directories="$(MergedOutputPath)" Condition="!EXISTS($(MergedOutputPath))"/>
     <Message Text="Merging: @(MergeAsm->'%(Filename)', ' and ') into $(MergedOutputPath)\TotalRecall.dll" />
     <Exec Command="&quot;$(ILMerge)&quot; /ndebug /targetplatform:v4,&quot;$(MSBuildBinPath)&quot; /target:library /out:&quot;$(MergedOutputPath)\TotalRecall.dll&quot; @(MergeAsm->'&quot;%(FullPath)&quot;', ' ') " />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\totalrecall.targets" DestinationFolder="$(MergedOutputPath)" />
   </Target>
 
   <Target Name="MergeRekallConsole">
@@ -54,5 +55,6 @@
   <Target Name="CopyToNugetPackage">
     <Copy SourceFiles="$(MergedOutputPath)\TotalRecall.dll" DestinationFolder="$(NugetPackageOutputPath)" />
     <Copy SourceFiles="$(MergedOutputPath)\TotalRecall.dll" DestinationFolder="$(NugetPackageToolsPath)" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\totalrecall.targets" DestinationFolder="$(NugetPackageToolsPath)" />
   </Target>
 </Project>
